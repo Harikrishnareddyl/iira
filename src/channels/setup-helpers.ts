@@ -4,9 +4,12 @@
  * Provides Inngest REST API access for webhook management.
  */
 
-const INNGEST_API = "https://api.inngest.com";
+const INNGEST_API = process.env.INNGEST_DEV === "1"
+  ? (process.env.INNGEST_BASE_URL ?? "http://localhost:8288")
+  : "https://api.inngest.com";
 
 function getSigningKey(): string {
+  if (process.env.INNGEST_DEV === "1") return "dev";
   const key = process.env.INNGEST_SIGNING_KEY;
   if (!key) throw new Error("INNGEST_SIGNING_KEY is required");
   return key;

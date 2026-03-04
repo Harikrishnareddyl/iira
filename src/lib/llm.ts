@@ -65,6 +65,19 @@ export async function callLLM(
     .filter((c): c is ToolCall => c.type === "toolCall")
     .map((c) => ({ id: c.id, name: c.name, arguments: c.arguments || {} }));
 
+  // Strip OpenAI Responses API server-side item IDs (rs_xxx, msg IDs via textSignature,
+  // and fc_xxx IDs via toolCall id suffix) from the message before it's stored in
+  // Inngest's step memoization. Since we use store:false, these IDs expire after the
+  // response and cause 404s when the function body replays on subsequent steps.
+  for (const block of result.content) {
+    if ("textSignature" in block) delete (block as any).textSignature;
+    if ("thinkingSignature" in block) delete (block as any).thinkingSignature;
+    if (block.type === "toolCall" && typeof (block as any).id === "string") {
+      // id format is "call_id|item_id" — strip the item_id suffix
+      (block as any).id = (block as any).id.split("|")[0];
+    }
+  }
+
   return {
     message: result,
     text,

@@ -111,5 +111,11 @@ export async function buildConversationHistory(
   maxMessages = 10,
 ): Promise<SessionMessage[]> {
   const history = await loadSession(sessionKey, maxMessages);
-  return history.filter((m) => m.role === "user" || m.role === "assistant");
+  const filtered = history.filter((m) => m.role === "user" || m.role === "assistant");
+  // Drop the last entry if it's a user message — the agent loop always appends
+  // the current userMessage explicitly, and save-incoming already wrote it to the session.
+  if (filtered.length > 0 && filtered[filtered.length - 1].role === "user") {
+    filtered.pop();
+  }
+  return filtered;
 }

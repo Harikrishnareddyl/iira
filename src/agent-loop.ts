@@ -194,6 +194,9 @@ export function createAgentLoop(
     let finalResponse = "";
     let done = false;
     let hasCompactedThisRun = false;
+    let totalTokensIn = 0;
+    let totalTokensOut = 0;
+    let totalCost = 0;
 
     while (!done && iterations < config.loop.maxIterations) {
       iterations++;
@@ -348,8 +351,14 @@ export function createAgentLoop(
 
       // Log iteration
       if (llmResponse.usage) {
+        const tokIn = llmResponse.usage.input || 0;
+        const tokOut = llmResponse.usage.output || 0;
+        const cost = llmResponse.usage.cost?.total || 0;
+        totalTokensIn += tokIn;
+        totalTokensOut += tokOut;
+        totalCost += cost;
         console.log(
-          `[loop] iter=${iterations} tools=${toolCalls.length} tokens=${llmResponse.usage.input || "?"}in/${llmResponse.usage.output || "?"}out cost=$${llmResponse.usage.cost?.total?.toFixed(4) || "?"}`,
+          `[loop] iter=${iterations} tools=${toolCalls.length} tokens=${tokIn}in/${tokOut}out cost=$${cost.toFixed(4)}`,
         );
       }
     }
@@ -357,6 +366,10 @@ export function createAgentLoop(
     if (!done) {
       finalResponse = `(Reached max iterations: ${config.loop.maxIterations})`;
     }
+
+    console.log(
+      `[loop] total iters=${iterations} tools=${totalToolCalls} tokens=${totalTokensIn}in/${totalTokensOut}out cost=$${totalCost.toFixed(4)}`,
+    );
 
     return {
       response: finalResponse,
