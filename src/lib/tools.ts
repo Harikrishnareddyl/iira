@@ -5,12 +5,17 @@
  * - read: offset/limit, image support, binary detection, smart truncation
  * - edit: exact text match + replace (surgical edits, not full file rewrites)
  * - write: create/overwrite files with directory creation
- * - bash: shell execution with configurable timeout and output truncation
  * - grep: regex search respecting .gitignore
  * - find: glob-based file discovery respecting .gitignore
  * - ls: directory listing with tree display
  *
- * Plus custom tools specific to Utah (remember, web_fetch).
+ * Plus custom tools specific to Utah:
+ * - remember: append to daily memory log
+ * - web_fetch: fetch a URL as text
+ * - web_search: search via Exa (only available when EXA_API_KEY is set)
+ * - run_command: run allowlisted project commands (npm/pnpm/node/python/etc.)
+ * - git: run allowlisted git subcommands
+ * - delegate_task: spawn a sub-agent via Inngest
  */
 
 import { Type } from "@mariozechner/pi-ai";
@@ -19,12 +24,12 @@ import {
   createReadTool,
   createEditTool,
   createWriteTool,
-  createBashTool,
   createGrepTool,
   createFindTool,
   createLsTool,
 } from "@mariozechner/pi-coding-agent";
 import type { AgentTool } from "@mariozechner/pi-agent-core";
+import { spawn } from "child_process";
 import { config } from "../config.ts";
 import { appendDailyLog } from "./memory.ts";
 
@@ -36,13 +41,92 @@ const piTools: AgentTool<any>[] = [
   createReadTool(config.workspace.root),
   createEditTool(config.workspace.root),
   createWriteTool(config.workspace.root),
-  createBashTool(config.workspace.root),
   createGrepTool(config.workspace.root),
   createFindTool(config.workspace.root),
   createLsTool(config.workspace.root),
 ];
 
-// --- Custom Utah tools ---
+// --- run_command tool ---
+
+const ALLOWED_COMMANDS = new Set([
+  "npm", "pnpm", "npx", "node", "python", "python3",
+  "pip", "pip3", "deno", "bun",
+]);
+
+const SHELL_OPERATORS = /[|>&;`$(){}]/;
+
+function parseRunCommand(command: string): { bin: string; args: string[] } | null {
+  if (SHELL_OPERATORS.test(command)) return null;
+  const parts = command.trim().split(/\s+/);
+  if (!ALLOWED_COMMANDS.has(parts[0])) return null;
+  return { bin: parts[0], args: parts.slice(1) };
+}
+
+const runCommandTool: Tool = {
+  name: "run_command",
+  description:
+    "Run a project command in the workspace. Use for: installing dependencies, running tests, building, running scripts. " +
+    "Allowed: npm, pnpm, npx, node, python, python3, pip, pip3, deno, bun. " +
+    "Shell operators (|, >, &&, ;) are not supported.",
+  parameters: Type.Object({
+    command: Type.String({
+      description: 'Command to run, e.g. "pnpm install", "npm test", "node scripts/seed.js"',
+    }),
+  }),
+};
+
+// --- git tool ---
+
+const ALLOWED_GIT_SUBCOMMANDS = new Set([
+  "status", "diff", "log", "show", "add", "commit", "branch",
+  "checkout", "switch", "pull", "push", "fetch", "stash",
+  "reset", "revert", "merge", "rebase", "tag", "remote", "init", "clone",
+]);
+
+const BLOCKED_GIT_FLAGS = new Set(["--force", "-f", "--hard"]);
+
+function parseGitArgs(args: string): string[] | null {
+  const parts = args.trim().split(/\s+/);
+  if (!ALLOWED_GIT_SUBCOMMANDS.has(parts[0])) return null;
+  // Block dangerous flags on destructive subcommands
+  const subcmd = parts[0];
+  if (["push", "reset", "checkout", "rebase"].includes(subcmd)) {
+    for (const part of parts) {
+      if (BLOCKED_GIT_FLAGS.has(part)) return null;
+    }
+  }
+  return parts;
+}
+
+const gitTool: Tool = {
+  name: "git",
+  description:
+    "Run a git command in the workspace. Use for: status, diff, log, add, commit, branch, checkout, pull, push, stash, reset, etc. " +
+    "Force flags (--force, -f) are blocked on destructive operations.",
+  parameters: Type.Object({
+    args: Type.String({
+      description:
+        'Git arguments (without "git"), e.g. "status", "diff HEAD", "log --oneline -10", "commit -m \'fix: typo\'"',
+    }),
+  }),
+};
+
+// --- web_search tool (Exa, optional) ---
+
+const webSearchTool: Tool = {
+  name: "web_search",
+  description:
+    "Search the web using Exa. Returns titles, URLs, and snippets. " +
+    "Use this to find relevant URLs before using web_fetch, rather than guessing URLs.",
+  parameters: Type.Object({
+    query: Type.String({ description: "Search query" }),
+    num_results: Type.Optional(
+      Type.Number({ description: "Number of results to return (default 5, max 10)", minimum: 1, maximum: 10 }),
+    ),
+  }),
+};
+
+// --- remember tool ---
 
 const rememberTool: Tool = {
   name: "remember",
@@ -53,6 +137,8 @@ const rememberTool: Tool = {
   }),
 };
 
+// --- web_fetch tool ---
+
 const webFetchTool: Tool = {
   name: "web_fetch",
   description: "Fetch a URL and return the response body as text",
@@ -60,6 +146,8 @@ const webFetchTool: Tool = {
     url: Type.String({ description: "URL to fetch" }),
   }),
 };
+
+// --- delegate_task tool ---
 
 const delegateTaskTool: Tool = {
   name: "delegate_task",
@@ -80,20 +168,37 @@ You'll receive a summary of what it accomplished.`,
 
 // --- Exports ---
 
-/**
- * All tools available to the main agent (includes delegate_task).
- */
-export const TOOLS: Tool[] = [
+const baseTools: Tool[] = [
   ...piTools,
   rememberTool,
   webFetchTool,
+  runCommandTool,
+  gitTool,
   delegateTaskTool,
 ];
+
+const baseSubAgentTools: Tool[] = [
+  ...piTools,
+  rememberTool,
+  webFetchTool,
+  runCommandTool,
+  gitTool,
+];
+
+// web_search is only available when EXA_API_KEY is configured
+export const hasExa = Boolean(process.env.EXA_API_KEY);
+
+/**
+ * All tools available to the main agent (includes delegate_task).
+ */
+export const TOOLS: Tool[] = hasExa ? [...baseTools, webSearchTool] : baseTools;
 
 /**
  * Tools available to sub-agents (no delegate_task to prevent recursive spawning).
  */
-export const SUB_AGENT_TOOLS: Tool[] = [...piTools, rememberTool, webFetchTool];
+export const SUB_AGENT_TOOLS: Tool[] = hasExa
+  ? [...baseSubAgentTools, webSearchTool]
+  : baseSubAgentTools;
 
 /**
  * Map of pi-coding-agent tools by name for direct execution.
@@ -110,10 +215,40 @@ export interface ToolResult {
 }
 
 /**
+ * Run a child process and return combined stdout+stderr.
+ */
+function runProcess(
+  bin: string,
+  args: string[],
+  cwd: string,
+  timeoutMs: number,
+  maxOutputBytes = 20_000,
+): Promise<{ output: string; exitCode: number | null }> {
+  return new Promise((resolve) => {
+    const chunks: Buffer[] = [];
+    const proc = spawn(bin, args, { cwd, stdio: ["ignore", "pipe", "pipe"] });
+
+    proc.stdout.on("data", (d: Buffer) => chunks.push(d));
+    proc.stderr.on("data", (d: Buffer) => chunks.push(d));
+
+    const timer = setTimeout(() => {
+      proc.kill();
+      resolve({ output: "(timed out)", exitCode: null });
+    }, timeoutMs);
+
+    proc.on("close", (code) => {
+      clearTimeout(timer);
+      const raw = Buffer.concat(chunks).toString("utf-8");
+      resolve({
+        output: raw.length > maxOutputBytes ? raw.slice(0, maxOutputBytes) + "\n...(truncated)" : raw,
+        exitCode: code,
+      });
+    });
+  });
+}
+
+/**
  * Execute a tool by name.
- *
- * Pi-coding-agent tools are called via their execute() method.
- * Custom tools (remember, web_fetch) are handled inline.
  */
 export async function executeTool(
   toolCallId: string,
@@ -141,6 +276,7 @@ export async function executeTool(
         await appendDailyLog(args.note as string);
         return { result: "Saved to today's log." };
       }
+
       case "web_fetch": {
         const res = await fetch(args.url as string, {
           signal: AbortSignal.timeout(30_000),
@@ -149,6 +285,84 @@ export async function executeTool(
         const text = await res.text();
         return { result: text.slice(0, 50_000) };
       }
+
+      case "web_search": {
+        const apiKey = process.env.EXA_API_KEY;
+        if (!apiKey) {
+          return { result: "EXA_API_KEY is not set.", error: true };
+        }
+        const numResults = Math.min(Number(args.num_results ?? 5), 10);
+        const res = await fetch("https://api.exa.ai/search", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-api-key": apiKey,
+          },
+          body: JSON.stringify({
+            query: args.query,
+            numResults,
+            useAutoprompt: true,
+          }),
+          signal: AbortSignal.timeout(15_000),
+        });
+        if (!res.ok) {
+          const err = await res.text();
+          return { result: `Exa search error ${res.status}: ${err}`, error: true };
+        }
+        const data = (await res.json()) as { results: Array<{ title: string; url: string; snippet?: string }> };
+        const lines = data.results.map(
+          (r) => `${r.title}\n${r.url}${r.snippet ? `\n${r.snippet}` : ""}`,
+        );
+        return { result: lines.join("\n\n") || "(no results)" };
+      }
+
+      case "run_command": {
+        const parsed = parseRunCommand(args.command as string);
+        if (!parsed) {
+          return {
+            result: `Command not allowed. Only these are permitted: ${[...ALLOWED_COMMANDS].join(", ")}. Shell operators (|, >, &&, ;) are not supported.`,
+            error: true,
+          };
+        }
+        const { output, exitCode } = await runProcess(
+          parsed.bin,
+          parsed.args,
+          config.workspace.root,
+          60_000,
+        );
+        return {
+          result: `Exit code: ${exitCode ?? "killed"}\n${output}`,
+          error: exitCode !== 0 && exitCode !== null,
+        };
+      }
+
+      case "git": {
+        const parsed = parseGitArgs(args.args as string);
+        if (!parsed) {
+          const sub = (args.args as string).trim().split(/\s+/)[0];
+          if (!ALLOWED_GIT_SUBCOMMANDS.has(sub)) {
+            return {
+              result: `Git subcommand "${sub}" is not allowed. Allowed: ${[...ALLOWED_GIT_SUBCOMMANDS].join(", ")}.`,
+              error: true,
+            };
+          }
+          return {
+            result: `Blocked: force flags (--force, -f, --hard) are not allowed on destructive git operations.`,
+            error: true,
+          };
+        }
+        const { output, exitCode } = await runProcess(
+          "git",
+          parsed,
+          config.workspace.root,
+          30_000,
+        );
+        return {
+          result: output || "(no output)",
+          error: exitCode !== 0 && exitCode !== null,
+        };
+      }
+
       default:
         return { result: `Unknown tool: ${name}`, error: true };
     }

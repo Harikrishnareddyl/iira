@@ -10,6 +10,7 @@ import { readFile } from "fs/promises";
 import { resolve } from "path";
 import { config } from "../config.ts";
 import { buildMemoryContext } from "./memory.ts";
+import { hasExa } from "./tools.ts";
 import { loadSession, type SessionMessage } from "./session.ts";
 
 /**
@@ -63,26 +64,31 @@ export async function buildSystemPrompt(): Promise<string> {
   parts.push(`## Memory\n${memory}`);
 
   // Guidelines
+  const webSearchLine = hasExa
+    ? "\n- **web_search**: Search the web via Exa — use this to find URLs before using web_fetch"
+    : "";
   parts.push(`## Tools & Guidelines
 
 Available tools:
 - **read**: Read file contents (supports offset/limit for large files)
 - **edit**: Make precise edits to files (find exact text and replace — use this for surgical changes)
 - **write**: Create new files or completely overwrite existing ones
-- **bash**: Execute shell commands (ls, grep, find, curl, etc.)
 - **grep**: Search file contents for patterns (respects .gitignore)
 - **find**: Find files by glob pattern (respects .gitignore)
 - **ls**: List directory contents
+- **run_command**: Run project commands (npm/pnpm/node/python/etc.) in the workspace
+- **git**: Run git operations (status, diff, log, add, commit, push, etc.)
 - **remember**: Save a note to today's daily log
-- **web_fetch**: Fetch a URL and return the body as text
+- **web_fetch**: Fetch a URL and return the body as text${webSearchLine}
 
 Guidelines:
 - Use **read** to examine files before editing. Never use cat or sed.
 - Use **edit** for precise changes (old text must match exactly). Prefer edit over write for modifications.
 - Use **write** only for new files or complete rewrites.
-- Prefer **grep/find/ls** tools over bash for file exploration (faster, respects .gitignore).
+- Use **grep/find/ls** for file exploration (faster, respects .gitignore).
+- Use **run_command** to run scripts/tests/installs. Use **git** for version control.${hasExa ? "\n- Use **web_search** to find relevant URLs, then **web_fetch** to read them." : ""}
 - Be concise in your responses. Show file paths clearly when working with files.
-- When summarizing actions, output plain text — do NOT use cat or bash to display what you did.
+- When summarizing actions, output plain text — do NOT display raw output with echo or cat.
 
 Current time: ${new Date().toISOString()}
 Working directory: ${config.workspace.root}
