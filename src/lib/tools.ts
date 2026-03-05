@@ -32,6 +32,21 @@ import type { AgentTool } from "@mariozechner/pi-agent-core";
 import { spawn } from "child_process";
 import { config } from "../config.ts";
 import { appendDailyLog } from "./memory.ts";
+import {
+  ALLOWED_COMMANDS,
+  SHELL_OPERATORS,
+  ALLOWED_GIT_SUBCOMMANDS,
+  GIT_DESTRUCTIVE_SUBCOMMANDS,
+  BLOCKED_GIT_FLAGS,
+  WEB_FETCH_MAX_BYTES,
+  WEB_FETCH_TIMEOUT_MS,
+  WEB_SEARCH_DEFAULT_RESULTS,
+  WEB_SEARCH_MAX_RESULTS,
+  WEB_SEARCH_TIMEOUT_MS,
+  RUN_COMMAND_TIMEOUT_MS,
+  RUN_COMMAND_MAX_OUTPUT_BYTES,
+  GIT_TIMEOUT_MS,
+} from "./tool-policy.ts";
 
 // --- Pi-coding-agent tools (configured for workspace) ---
 
@@ -47,13 +62,6 @@ const piTools: AgentTool<any>[] = [
 ];
 
 // --- run_command tool ---
-
-const ALLOWED_COMMANDS = new Set([
-  "npm", "pnpm", "npx", "node", "python", "python3",
-  "pip", "pip3", "deno", "bun",
-]);
-
-const SHELL_OPERATORS = /[|>&;`$(){}]/;
 
 function parseRunCommand(command: string): { bin: string; args: string[] } | null {
   if (SHELL_OPERATORS.test(command)) return null;
@@ -77,20 +85,10 @@ const runCommandTool: Tool = {
 
 // --- git tool ---
 
-const ALLOWED_GIT_SUBCOMMANDS = new Set([
-  "status", "diff", "log", "show", "add", "commit", "branch",
-  "checkout", "switch", "pull", "push", "fetch", "stash",
-  "reset", "revert", "merge", "rebase", "tag", "remote", "init", "clone",
-]);
-
-const BLOCKED_GIT_FLAGS = new Set(["--force", "-f", "--hard"]);
-
 function parseGitArgs(args: string): string[] | null {
   const parts = args.trim().split(/\s+/);
   if (!ALLOWED_GIT_SUBCOMMANDS.has(parts[0])) return null;
-  // Block dangerous flags on destructive subcommands
-  const subcmd = parts[0];
-  if (["push", "reset", "checkout", "rebase"].includes(subcmd)) {
+  if (GIT_DESTRUCTIVE_SUBCOMMANDS.has(parts[0])) {
     for (const part of parts) {
       if (BLOCKED_GIT_FLAGS.has(part)) return null;
     }
@@ -279,11 +277,11 @@ export async function executeTool(
 
       case "web_fetch": {
         const res = await fetch(args.url as string, {
-          signal: AbortSignal.timeout(30_000),
+          signal: AbortSignal.timeout(WEB_FETCH_TIMEOUT_MS),
           headers: { "User-Agent": "Utah-Agent/1.0" },
         });
         const text = await res.text();
-        return { result: text.slice(0, 50_000) };
+        return { result: text.slice(0, WEB_FETCH_MAX_BYTES) };
       }
 
       case "web_search": {
@@ -291,7 +289,7 @@ export async function executeTool(
         if (!apiKey) {
           return { result: "EXA_API_KEY is not set.", error: true };
         }
-        const numResults = Math.min(Number(args.num_results ?? 5), 10);
+        const numResults = Math.min(Number(args.num_results ?? WEB_SEARCH_DEFAULT_RESULTS), WEB_SEARCH_MAX_RESULTS);
         const res = await fetch("https://api.exa.ai/search", {
           method: "POST",
           headers: {
@@ -303,7 +301,7 @@ export async function executeTool(
             numResults,
             useAutoprompt: true,
           }),
-          signal: AbortSignal.timeout(15_000),
+          signal: AbortSignal.timeout(WEB_SEARCH_TIMEOUT_MS),
         });
         if (!res.ok) {
           const err = await res.text();
@@ -328,7 +326,8 @@ export async function executeTool(
           parsed.bin,
           parsed.args,
           config.workspace.root,
-          60_000,
+          RUN_COMMAND_TIMEOUT_MS,
+          RUN_COMMAND_MAX_OUTPUT_BYTES,
         );
         return {
           result: `Exit code: ${exitCode ?? "killed"}\n${output}`,
@@ -355,7 +354,7 @@ export async function executeTool(
           "git",
           parsed,
           config.workspace.root,
-          30_000,
+          GIT_TIMEOUT_MS,
         );
         return {
           result: output || "(no output)",
