@@ -10,7 +10,7 @@ import { readFile } from "fs/promises";
 import { resolve } from "path";
 import { config } from "../config.ts";
 import { buildMemoryContext } from "./memory.ts";
-import { hasExa } from "./tools.ts";
+import { hasExa, hasMcp } from "./tools.ts";
 import { loadSession, type SessionMessage } from "./session.ts";
 
 /**
@@ -67,6 +67,9 @@ export async function buildSystemPrompt(): Promise<string> {
   const webSearchLine = hasExa
     ? "\n- **web_search**: Search the web via Exa — use this to find URLs before using web_fetch"
     : "";
+  const mcpLines = hasMcp
+    ? "\n- **mcp_list**: List all configured MCP servers and their available tools\n- **mcp_call**: Call a tool on a configured MCP server"
+    : "";
   parts.push(`## Tools & Guidelines
 
 Available tools:
@@ -79,14 +82,14 @@ Available tools:
 - **run_command**: Run project commands (npm/pnpm/node/python/etc.) in the workspace
 - **git**: Run git operations (status, diff, log, add, commit, push, etc.)
 - **remember**: Save a note to today's daily log
-- **web_fetch**: Fetch a URL and return the body as text${webSearchLine}
+- **web_fetch**: Fetch a URL and return the body as text${webSearchLine}${mcpLines}
 
 Guidelines:
 - Use **read** to examine files before editing. Never use cat or sed.
 - Use **edit** for precise changes (old text must match exactly). Prefer edit over write for modifications.
 - Use **write** only for new files or complete rewrites.
 - Use **grep/find/ls** for file exploration (faster, respects .gitignore).
-- Use **run_command** to run scripts/tests/installs. Use **git** for version control.${hasExa ? "\n- Use **web_search** to find relevant URLs, then **web_fetch** to read them." : ""}
+- Use **run_command** to run scripts/tests/installs. Use **git** for version control.${hasExa ? "\n- Use **web_search** to find relevant URLs, then **web_fetch** to read them." : ""}${hasMcp ? "\n- Use **mcp_list** to discover available MCP tools, then **mcp_call** to invoke them." : ""}
 - Be concise in your responses. Show file paths clearly when working with files.
 - When summarizing actions, output plain text — do NOT display raw output with echo or cat.
 

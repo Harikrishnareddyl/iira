@@ -32,6 +32,7 @@ import type { AgentTool } from "@mariozechner/pi-agent-core";
 import { spawn } from "child_process";
 import { config } from "../config.ts";
 import { appendDailyLog } from "./memory.ts";
+import { hasMcpServers, listMcpTools, callMcpTool } from "./mcp.ts";
 import {
   ALLOWED_COMMANDS,
   SHELL_OPERATORS,
@@ -145,6 +146,30 @@ const webFetchTool: Tool = {
   }),
 };
 
+// --- mcp_list tool ---
+
+const mcpListTool: Tool = {
+  name: "mcp_list",
+  description:
+    "List all configured MCP servers and their available tools. Use this before mcp_call to discover what's available.",
+  parameters: Type.Object({}),
+};
+
+// --- mcp_call tool ---
+
+const mcpCallTool: Tool = {
+  name: "mcp_call",
+  description:
+    "Call a tool on a configured MCP server. Use mcp_list first to discover available servers and tool names.",
+  parameters: Type.Object({
+    server: Type.String({ description: "MCP server alias (as shown by mcp_list)" }),
+    tool: Type.String({ description: "Tool name to call" }),
+    args: Type.Optional(
+      Type.Record(Type.String(), Type.Unknown({ description: "Tool arguments" })),
+    ),
+  }),
+};
+
 // --- delegate_task tool ---
 
 const delegateTaskTool: Tool = {
@@ -186,17 +211,26 @@ const baseSubAgentTools: Tool[] = [
 // web_search is only available when EXA_API_KEY is configured
 export const hasExa = Boolean(process.env.EXA_API_KEY);
 
+// mcp_list/mcp_call are only available when MCP_SERVERS is configured
+export const hasMcp = hasMcpServers();
+
+const mcpTools: Tool[] = hasMcp ? [mcpListTool, mcpCallTool] : [];
+
 /**
  * All tools available to the main agent (includes delegate_task).
  */
-export const TOOLS: Tool[] = hasExa ? [...baseTools, webSearchTool] : baseTools;
+export const TOOLS: Tool[] = [
+  ...(hasExa ? [...baseTools, webSearchTool] : baseTools),
+  ...mcpTools,
+];
 
 /**
  * Tools available to sub-agents (no delegate_task to prevent recursive spawning).
  */
-export const SUB_AGENT_TOOLS: Tool[] = hasExa
-  ? [...baseSubAgentTools, webSearchTool]
-  : baseSubAgentTools;
+export const SUB_AGENT_TOOLS: Tool[] = [
+  ...(hasExa ? [...baseSubAgentTools, webSearchTool] : baseSubAgentTools),
+  ...mcpTools,
+];
 
 /**
  * Map of pi-coding-agent tools by name for direct execution.
@@ -360,6 +394,25 @@ export async function executeTool(
           result: output || "(no output)",
           error: exitCode !== 0 && exitCode !== null,
         };
+      }
+
+      case "mcp_list": {
+        const all = await listMcpTools();
+        if (all.length === 0) return { result: "No MCP servers connected." };
+        const lines = all.map(
+          ({ server, tools }) =>
+            `${server}:\n${tools.map((t) => `  - ${t.name}${t.description ? `: ${t.description}` : ""}`).join("\n")}`,
+        );
+        return { result: lines.join("\n\n") };
+      }
+
+      case "mcp_call": {
+        const result = await callMcpTool(
+          args.server as string,
+          args.tool as string,
+          (args.args as Record<string, unknown>) ?? {},
+        );
+        return { result };
       }
 
       default:

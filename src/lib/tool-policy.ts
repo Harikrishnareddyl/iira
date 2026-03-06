@@ -1,9 +1,11 @@
 /**
- * Tool Policy — all allowlists and blocklists for agent tools.
+ * Tool Policy — all allowlists, blocklists, and server configs for agent tools.
  *
  * Edit this file to control what the agent is and isn't allowed to do.
  * Changes here take effect immediately on next worker restart.
  */
+
+import type { McpServerConfig } from "./mcp.ts";
 
 // ---------------------------------------------------------------------------
 // run_command
@@ -126,3 +128,27 @@ export const RUN_COMMAND_MAX_OUTPUT_BYTES = 20_000;
 
 /** Timeout for git command execution (milliseconds). */
 export const GIT_TIMEOUT_MS = 30_000;
+
+// ---------------------------------------------------------------------------
+// mcp
+// ---------------------------------------------------------------------------
+
+/**
+ * MCP servers available to the agent.
+ * Add entries here to connect to MCP servers at startup.
+ *
+ * Two transport types:
+ *   stdio — spawn a subprocess:  { command, args?, env?, cwd? }
+ *   http  — connect to a URL:    { url, headers? }
+ *
+ * Examples:
+ *   github: { command: "npx", args: ["-y", "@modelcontextprotocol/server-github"], env: { GITHUB_TOKEN: "ghp_..." } }
+ *   fs:     { command: "npx", args: ["-y", "@modelcontextprotocol/server-filesystem", "./workspace"] }
+ *   myapi:  { url: "http://localhost:3001/mcp" }
+ */
+export const MCP_SERVERS: Record<string, McpServerConfig> = {
+  // "github": { command: "npx", args: ["-y", "@modelcontextprotocol/server-github"], env: { GITHUB_TOKEN: "" } },
+};
+
+/** Timeout for individual MCP tool calls (milliseconds). */
+export const MCP_CALL_TIMEOUT_MS = 60_000;

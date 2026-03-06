@@ -13,6 +13,8 @@ import { subAgent } from "./functions/sub-agent.ts";
 import { ensureWorkspace } from "./lib/session.ts";
 import { setup } from "./setup.ts";
 import { config } from "./config.ts";
+import { initMcpClients } from "./lib/mcp.ts";
+import { MCP_SERVERS } from "./lib/tool-policy.ts";
 
 const functions = [
   handleMessage,
@@ -25,6 +27,9 @@ const functions = [
 
 async function main() {
   await ensureWorkspace(config.workspace.root);
+
+  // Connect to MCP servers (no-op if MCP_SERVERS is empty)
+  await initMcpClients(MCP_SERVERS);
 
   // Ensure Inngest webhook + Telegram webhook are configured
   await setup();
