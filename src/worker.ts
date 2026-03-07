@@ -26,6 +26,21 @@ const functions = [
 ];
 
 async function main() {
+  // Validate required env vars before anything else
+  const apiKeyMap: Record<string, string> = {
+    anthropic: "ANTHROPIC_API_KEY",
+    openai: "OPENAI_API_KEY",
+    google: "GOOGLE_API_KEY",
+  };
+  const requiredKey = apiKeyMap[config.llm.provider];
+  if (requiredKey && !process.env[requiredKey]) {
+    throw new Error(`Missing required env var: ${requiredKey} (provider: ${config.llm.provider})`);
+  }
+  const isDevMode = process.env.INNGEST_DEV === "1";
+  if (!isDevMode && !process.env.INNGEST_SIGNING_KEY) {
+    console.warn("⚠️  INNGEST_SIGNING_KEY not set — required for production");
+  }
+
   await ensureWorkspace(config.workspace.root);
 
   // Connect to MCP servers (no-op if MCP_SERVERS is empty)

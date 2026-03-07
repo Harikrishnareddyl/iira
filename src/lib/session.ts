@@ -18,7 +18,8 @@ export interface SessionMessage {
 }
 
 function sessionPath(sessionKey: string): string {
-  return resolve(config.workspace.root, config.workspace.sessionDir, `${sessionKey}.jsonl`);
+  const safe = sessionKey.replace(/[^a-zA-Z0-9_-]/g, "_");
+  return resolve(config.workspace.root, config.workspace.sessionDir, `${safe}.jsonl`);
 }
 
 export async function ensureWorkspace(root: string): Promise<void> {

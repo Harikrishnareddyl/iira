@@ -310,7 +310,23 @@ export async function executeTool(
       }
 
       case "web_fetch": {
-        const res = await fetch(args.url as string, {
+        const urlStr = args.url as string;
+        let parsedUrl: URL;
+        try {
+          parsedUrl = new URL(urlStr);
+        } catch {
+          return { result: "Invalid URL.", error: true };
+        }
+        if (parsedUrl.protocol !== "https:" && parsedUrl.protocol !== "http:") {
+          return { result: `URL scheme "${parsedUrl.protocol}" is not allowed. Only http and https are permitted.`, error: true };
+        }
+        const hostname = parsedUrl.hostname;
+        const privateRanges = /^(127\.|10\.|169\.254\.|192\.168\.|::1$|localhost$)/;
+        const private172 = /^172\.(1[6-9]|2\d|3[01])\./;
+        if (privateRanges.test(hostname) || private172.test(hostname)) {
+          return { result: "Requests to private or internal network addresses are not allowed.", error: true };
+        }
+        const res = await fetch(urlStr, {
           signal: AbortSignal.timeout(WEB_FETCH_TIMEOUT_MS),
           headers: { "User-Agent": "Iira-Agent/1.0" },
         });

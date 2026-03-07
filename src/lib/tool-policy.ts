@@ -152,3 +152,13 @@ export const MCP_SERVERS: Record<string, McpServerConfig> = {
 
 /** Timeout for individual MCP tool calls (milliseconds). */
 export const MCP_CALL_TIMEOUT_MS = 60_000;
+
+// ---------------------------------------------------------------------------
+// message
+// ---------------------------------------------------------------------------
+
+/**
+ * Maximum incoming message length in characters.
+ * Messages longer than this are truncated before reaching the agent loop.
+ */
+export const MESSAGE_MAX_CHARS = 32_000;

@@ -12,6 +12,8 @@
 import { inngest, agentMessageReceived } from "../client.ts";
 import { createAgentLoop } from "../agent-loop.ts";
 import { appendToSession } from "../lib/session.ts";
+import { config } from "../config.ts";
+import { MESSAGE_MAX_CHARS } from "../lib/tool-policy.ts";
 
 export const handleMessage = inngest.createFunction(
   {
@@ -21,13 +23,28 @@ export const handleMessage = inngest.createFunction(
     singleton: { key: "event.data.sessionKey", mode: "cancel" },
   },
   async ({ event, step }) => {
-    const {
+    let {
       message,
       sessionKey = "main",
       channel = "unknown",
       destination,
       channelMeta = {},
     } = event.data;
+
+    // Enforce Telegram allowed-chat filter
+    if (channel === "telegram") {
+      const allowed = config.telegram.allowedChatIds;
+      if (allowed.length > 0 && !allowed.includes(destination?.chatId ?? "")) {
+        console.log(`[message] Telegram chatId "${destination?.chatId}" not in allowlist — dropping`);
+        return;
+      }
+    }
+
+    // Truncate oversized messages
+    if (message.length > MESSAGE_MAX_CHARS) {
+      console.warn(`[message] Truncating message from ${message.length} to ${MESSAGE_MAX_CHARS} chars`);
+      message = message.slice(0, MESSAGE_MAX_CHARS);
+    }
 
     // Save the incoming message
     await step.run("save-incoming", async () => {
