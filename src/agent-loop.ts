@@ -128,9 +128,9 @@ export function createAgentLoop(
       await ensureWorkspace();
     });
 
-    // Build system prompt (loads SOUL.md, USER.md, memory)
+    // Build system prompt (loads SOUL.md, USER.md, memory + anchors current goal)
     const systemPrompt = await step.run("load-context", async () => {
-      return await buildSystemPrompt();
+      return await buildSystemPrompt(userMessage);
     });
 
     // Load conversation history (step.run returns Jsonified types, so we annotate)
@@ -334,12 +334,25 @@ export function createAgentLoop(
           }
 
           // Observe: feed result back in pi-ai's ToolResultMessage format
+          // Wrap failures with a reasoning nudge to encourage adaptive recovery
+          const resultText = toolResult.error
+            ? `${toolResult.result}\n\n[Tool failed. Before retrying, consider: why did this fail? Is there a different approach?]`
+            : toolResult.result;
+
           messages.push({
             role: "toolResult" as const,
             toolCallId: tc.id,
             toolName: tc.name,
-            content: [{ type: "text" as const, text: toolResult.result }],
+            content: [{ type: "text" as const, text: resultText }],
             isError: toolResult.error || false,
+            timestamp: Date.now(),
+          });
+        }
+        // Reflection nudge: after 3+ tool calls in one iteration, prompt a brief check-in
+        if (toolCalls.length >= 3) {
+          messages.push({
+            role: "user" as const,
+            content: `[${toolCalls.length} tools called this step. Briefly: are you still on track toward the goal? What's your next step?]`,
             timestamp: Date.now(),
           });
         }

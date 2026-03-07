@@ -1,6 +1,4 @@
-# Inngest Agent Example — Utah
-
-_**U**niversally **T**riggered **A**gent **H**arness_
+# Iira — Intelligent Iterative Reasoning Agent
 
 A durable AI agent built with [Inngest](https://inngest.com) and [pi-ai](https://github.com/badlogic/pi-mono). No framework. Just a think/act/observe loop — Inngest provides durability, retries, and observability, while pi-ai provides a unified LLM interface across providers.
 
@@ -40,8 +38,8 @@ The worker connects to Inngest Cloud via WebSocket. No public endpoint. No ngrok
 ### 2. Configure and Run
 
 ```bash
-git clone https://github.com/inngest/utah
-cd utah
+git clone https://github.com/inngest/iira
+cd iira
 npm install # or pnpm
 cp .env.example .env
 ```

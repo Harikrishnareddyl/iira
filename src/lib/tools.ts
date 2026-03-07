@@ -9,7 +9,7 @@
  * - find: glob-based file discovery respecting .gitignore
  * - ls: directory listing with tree display
  *
- * Plus custom tools specific to Utah:
+ * Plus custom tools specific to Iira:
  * - remember: append to daily memory log
  * - web_fetch: fetch a URL as text
  * - web_search: search via Exa (only available when EXA_API_KEY is set)
@@ -312,7 +312,7 @@ export async function executeTool(
       case "web_fetch": {
         const res = await fetch(args.url as string, {
           signal: AbortSignal.timeout(WEB_FETCH_TIMEOUT_MS),
-          headers: { "User-Agent": "Utah-Agent/1.0" },
+          headers: { "User-Agent": "Iira-Agent/1.0" },
         });
         const text = await res.text();
         return { result: text.slice(0, WEB_FETCH_MAX_BYTES) };

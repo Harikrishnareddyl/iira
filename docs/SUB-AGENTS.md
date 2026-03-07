@@ -1,10 +1,10 @@
-# Sub-Agent Spawning for Utah
+# Sub-Agent Spawning for Iira
 
 *Design doc — 2026-02-22*
 
 ## Problem
 
-Long conversations with tool-heavy coding work blow up context windows. Utah's current mitigations (two-tier pruning, compaction) help but are lossy — they throw away context that might matter. A coding task with 15+ tool calls fills the window, then compaction summarizes away details the agent might need for the next task.
+Long conversations with tool-heavy coding work blow up context windows. Iira's current mitigations (two-tier pruning, compaction) help but are lossy — they throw away context that might matter. A coding task with 15+ tool calls fills the window, then compaction summarizes away details the agent might need for the next task.
 
 The real fix: **delegate complex work to an isolated sub-agent that runs in its own context window and reports back a summary.**
 
@@ -351,7 +351,7 @@ if (depth >= MAX_SUB_AGENT_DEPTH) {
 
 ## Comparison with Existing Approaches
 
-| Aspect | Utah (current) | OpenClaw/Pi | Pi-mono | This Proposal |
+| Aspect | Iira (current) | OpenClaw/Pi | Pi-mono | This Proposal |
 |--------|---------------|-------------|---------|---------------|
 | Context management | Pruning + compaction | Pruning + compaction + sub-agents | Session branching | Pruning + compaction + sub-agents |
 | Sub-agent spawning | ❌ | `sessions_spawn` | ❌ (branching only) | `step.invoke()` tool |
@@ -360,4 +360,4 @@ if (depth >= MAX_SUB_AGENT_DEPTH) {
 | Durability | Inngest steps | In-process | In-process | Inngest steps (both parent + child) |
 | Observability | Inngest dashboard | Logs | Logs | Inngest dashboard (parent→child) |
 
-The key advantage of Utah's approach: **Inngest gives you durability and observability for free** on both the parent and sub-agent. If a sub-agent crashes mid-way, Inngest retries it. The parent's `step.invoke()` is checkpointed — it won't re-spawn on retry.
+The key advantage of Iira's approach: **Inngest gives you durability and observability for free** on both the parent and sub-agent. If a sub-agent crashes mid-way, Inngest retries it. The parent's `step.invoke()` is checkpointed — it won't re-spawn on retry.

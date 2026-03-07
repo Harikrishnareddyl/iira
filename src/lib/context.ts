@@ -31,18 +31,24 @@ async function loadOptionalFile(filename: string): Promise<string | null> {
  * Build the full system prompt.
  *
  * Structure:
+ * 0. Current goal (if userMessage provided — anchors attention for long tool sequences)
  * 1. Identity (IDENTITY.md, SOUL.md, or default)
  * 2. User info (USER.md)
  * 3. Memory (MEMORY.md + daily logs)
  * 4. Tool usage guidelines
  */
-export async function buildSystemPrompt(): Promise<string> {
+export async function buildSystemPrompt(userMessage?: string): Promise<string> {
   const identity = await loadOptionalFile("IDENTITY.md");
   const soul = await loadOptionalFile("SOUL.md");
   const user = await loadOptionalFile("USER.md");
   const memory = await buildMemoryContext();
 
   const parts: string[] = [];
+
+  // Goal anchoring — inject at top so it stays visible across long tool sequences
+  if (userMessage) {
+    parts.push(`## Current Goal\n${userMessage.trim()}`);
+  }
 
   // Identity
   if (soul) {

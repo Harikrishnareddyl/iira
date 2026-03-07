@@ -146,7 +146,7 @@ export async function closeMcpClients(): Promise<void> {
 // ---------------------------------------------------------------------------
 
 async function connectServer(alias: string, cfg: McpServerConfig): Promise<void> {
-  const client = new Client({ name: "utah-agent", version: "1.0.0" });
+  const client = new Client({ name: "iira-agent", version: "1.0.0" });
 
   if (isStdio(cfg)) {
     const transport = new StdioClientTransport({

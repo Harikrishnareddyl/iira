@@ -2,7 +2,7 @@ import { resolve } from "path";
 
 export const config = {
   agent: {
-    name: process.env.AGENT_NAME || "Utah",
+    name: process.env.AGENT_NAME || "Iira",
   },
 
   workspace: {
