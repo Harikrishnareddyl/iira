@@ -31,9 +31,12 @@ async function main() {
     anthropic: "ANTHROPIC_API_KEY",
     openai: "OPENAI_API_KEY",
     google: "GOOGLE_API_KEY",
+    mercury: "INCEPTION_API_KEY",
   };
   const requiredKey = apiKeyMap[config.llm.provider];
-  if (requiredKey && !process.env[requiredKey]) {
+  const hasMercuryKey = config.llm.provider === "mercury" &&
+    (process.env.INCEPTION_API_KEY || process.env.MERCURY_API_KEY);
+  if (requiredKey && !process.env[requiredKey] && !hasMercuryKey) {
     throw new Error(`Missing required env var: ${requiredKey} (provider: ${config.llm.provider})`);
   }
   const isDevMode = process.env.INNGEST_DEV === "1";

@@ -6,27 +6,55 @@
  */
 
 import { getModel, complete, validateToolArguments } from "@mariozechner/pi-ai";
-import type { Tool, Message, AssistantMessage, KnownProvider, TextContent, ToolCall } from "@mariozechner/pi-ai";
+import type { Tool, Message, AssistantMessage, KnownProvider, TextContent, ToolCall, Model } from "@mariozechner/pi-ai";
 import { config } from "../config.ts";
 
 export type { Tool, Message, AssistantMessage, TextContent, ToolCall };
 export { validateToolArguments };
 
-let _model: ReturnType<typeof getModel> | null = null;
+let _model: ReturnType<typeof getModel> | Model<"openai-completions"> | null = null;
+
+// Mercury 2 API key — check INCEPTION_API_KEY first, fall back to MERCURY_API_KEY
+function getMercuryApiKey(): string | undefined {
+  return process.env.INCEPTION_API_KEY || process.env.MERCURY_API_KEY;
+}
 
 export function getConfiguredModel() {
   if (!_model) {
-    // Provider and model come from runtime config (env vars).
-    // getModel's generics require literal types from the MODELS registry,
-    // so we assert here — an invalid combo will throw at runtime.
-    _model = getModel(
-      config.llm.provider as KnownProvider as any,
-      config.llm.model as any,
-    );
-    if (!_model) {
-      throw new Error(
-        `Unknown model "${config.llm.model}" for provider "${config.llm.provider}". Check AGENT_MODEL and LLM_PROVIDER env vars.`,
+    if (config.llm.provider === "mercury") {
+      // Mercury 2 is OpenAI-compatible — build a custom model object
+      _model = {
+        id: config.llm.model || "mercury-2",
+        name: "Mercury 2",
+        api: "openai-completions" as const,
+        provider: "mercury",
+        baseUrl: "https://api.inceptionlabs.ai/v1",
+        reasoning: false,
+        input: ["text"] as ("text" | "image")[],
+        cost: { input: 0.00000025, output: 0.00000075, cacheRead: 0, cacheWrite: 0 },
+        contextWindow: 128_000,
+        maxTokens: 8_192,
+        compat: {
+          supportsStore: false,
+          supportsDeveloperRole: false,
+          supportsReasoningEffort: false,
+          supportsUsageInStreaming: true,
+          maxTokensField: "max_tokens" as const,
+        },
+      } satisfies Model<"openai-completions">;
+    } else {
+      // Provider and model come from runtime config (env vars).
+      // getModel's generics require literal types from the MODELS registry,
+      // so we assert here — an invalid combo will throw at runtime.
+      _model = getModel(
+        config.llm.provider as KnownProvider as any,
+        config.llm.model as any,
       );
+      if (!_model) {
+        throw new Error(
+          `Unknown model "${config.llm.model}" for provider "${config.llm.provider}". Check AGENT_MODEL and LLM_PROVIDER env vars.`,
+        );
+      }
     }
   }
   return _model;
@@ -50,10 +78,13 @@ export async function callLLM(
 ): Promise<LLMResponse> {
   const model = getConfiguredModel();
 
+  const apiKey = config.llm.provider === "mercury" ? getMercuryApiKey() : undefined;
+
   const result = await complete(model, {
     systemPrompt: system,
     messages,
     tools,
+    ...(apiKey ? { apiKey } : {}),
   });
 
   const text = result.content

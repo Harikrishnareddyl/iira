@@ -13,11 +13,12 @@ export const config = {
   },
 
   llm: {
-    // pi-ai provider/model format — supports "anthropic", "openai", "google"
-    provider: (process.env.LLM_PROVIDER || "anthropic") as "anthropic" | "openai" | "google",
+    // pi-ai provider/model format — supports "anthropic", "openai", "google", "mercury"
+    provider: (process.env.LLM_PROVIDER || "anthropic") as "anthropic" | "openai" | "google" | "mercury",
     model: process.env.AGENT_MODEL || "claude-sonnet-4-20250514",
-    // API keys are read from env by pi-ai automatically:
+    // API keys are read from env by pi-ai automatically for known providers:
     //   ANTHROPIC_API_KEY, OPENAI_API_KEY, GOOGLE_API_KEY
+    // For Mercury, set INCEPTION_API_KEY (or MERCURY_API_KEY as fallback)
   },
 
   loop: {
