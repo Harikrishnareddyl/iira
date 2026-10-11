@@ -105,9 +105,9 @@ class PrimaryButton extends StatelessWidget {
         decoration: BoxDecoration(
           color: enabled ? c.green : c.greenSoft,
           borderRadius: BorderRadius.circular(height / 2.6),
-          border: Border(
-            bottom: BorderSide(color: c.greenDeep, width: enabled ? 3 : 0),
-          ),
+          border: enabled
+              ? Border(bottom: BorderSide(color: c.greenDeep, width: 3))
+              : null,
         ),
         alignment: Alignment.center,
         child: Row(

@@ -186,6 +186,7 @@ class _PowerUpTileState extends State<PowerUpTile>
   Widget build(BuildContext context) {
     final c = context.sq;
     final used = widget.count > 0;
+    final compact = widget.height < 72;
     return Pressable(
       onTap: () {
         _bounce.forward(from: 0);
@@ -214,11 +215,11 @@ class _PowerUpTileState extends State<PowerUpTile>
                     ),
                     child: widget.item.emoji != null
                         ? Text(widget.item.emoji!,
-                            style: const TextStyle(fontSize: 28))
+                            style: TextStyle(fontSize: compact ? 20 : 28, height: 1.15))
                         : Icon(widget.item.icon,
-                            size: 32, color: widget.item.color ?? c.inkSoft),
+                            size: compact ? 24 : 32, color: widget.item.color ?? c.inkSoft),
                   ),
-                  const SizedBox(height: 6),
+                  SizedBox(height: compact ? 2 : 6),
                   Text(widget.item.label,
                       textAlign: TextAlign.center,
                       maxLines: 1,

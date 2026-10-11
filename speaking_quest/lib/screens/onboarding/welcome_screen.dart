@@ -28,12 +28,13 @@ class WelcomeScreen extends StatelessWidget {
                   Text('Short spoken scenes, one goal each. Press Play and talk. We take care of the rest.',
                       textAlign: TextAlign.center, style: context.text.bodyLarge!.copyWith(color: c.inkMuted)),
                   const SizedBox(height: 22),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                  Wrap(
+                    alignment: WrapAlignment.center,
+                    runSpacing: 6,
                     children: [
                       for (final (icon, t) in [(Icons.mic_rounded, '2–4 min'), (Icons.flag_rounded, '1 goal'), (Icons.favorite_rounded, 'No lives')])
                         Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 6),
+                          padding: const EdgeInsets.symmetric(horizontal: 4),
                           child: Chip(
                             avatar: Icon(icon, size: 18, color: c.green),
                             label: Text(t),

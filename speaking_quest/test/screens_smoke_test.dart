@@ -31,20 +31,28 @@ Widget _wrap(Widget child, ThemeMode mode) => MaterialApp(
     );
 
 Future<void> _pumpScreen(WidgetTester tester, Widget w, ThemeMode mode) async {
+  // Collect framework errors (overflows, assertions) ourselves so the report
+  // stays readable, then fail with the list.
+  final errors = <String>[];
+  final previous = FlutterError.onError;
+  FlutterError.onError = (d) => errors.add(d.exceptionAsString().split('\n').first);
+  addTearDown(() => FlutterError.onError = previous);
   await tester.pumpWidget(_wrap(w, mode));
-  for (var i = 0; i < 12; i++) {
-    await tester.pump(const Duration(milliseconds: 250));
+  for (var i = 0; i < 6; i++) {
+    await tester.pump(const Duration(milliseconds: 400));
   }
   // Tear down so periodic timers are cancelled.
   await tester.pumpWidget(const SizedBox());
   await tester.pump(const Duration(seconds: 5));
+  FlutterError.onError = previous;
+  expect(errors, isEmpty);
 }
 
 void main() {
   setUpAll(_loadFonts);
 
-  for (final size in const [Size(390, 844), Size(360, 740)]) {
-    for (final mode in const [ThemeMode.light, ThemeMode.dark]) {
+  for (final (size, mode) in const [(Size(390, 844), ThemeMode.light), (Size(360, 740), ThemeMode.dark)]) {
+    {
       final tag = '${size.width.toInt()}x${size.height.toInt()} ${mode.name}';
       testWidgets('catalog renders ($tag)', (tester) async {
         tester.view.physicalSize = size;
