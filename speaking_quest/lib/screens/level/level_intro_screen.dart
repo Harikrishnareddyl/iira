@@ -5,6 +5,7 @@ import '../../theme/app_theme.dart';
 import '../../widgets/avatar.dart';
 import '../../widgets/common.dart';
 import '../../widgets/level.dart';
+import '../../widgets/mascot.dart';
 
 enum IntroVariant { plan, finale, freePlay, practice }
 
@@ -82,6 +83,16 @@ class _LevelIntroScreenState extends State<LevelIntroScreen> {
                           ),
                         ),
                       ],
+                      const SizedBox(height: 16),
+                      MascotTip(
+                        text: switch (_v) {
+                          IntroVariant.finale => 'No script this time. Use what you learned in this theme.',
+                          IntroVariant.practice => 'One minute. Just use the expression once.',
+                          _ => 'Stuck? Hints are free. Use them.',
+                        },
+                        mood: MascotMood.talking,
+                        size: 54,
+                      ),
                       if (_v == IntroVariant.freePlay || _v == IntroVariant.practice) ...[
                         const SizedBox(height: 14),
                         Text("Doesn't move your plan.",

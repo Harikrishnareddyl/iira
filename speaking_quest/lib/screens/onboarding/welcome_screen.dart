@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../theme/app_theme.dart';
 import '../../widgets/common.dart';
-import '../../widgets/companion.dart';
+import '../../widgets/mascot.dart';
 
 /// First launch: the companion, the promise, one button.
 class WelcomeScreen extends StatelessWidget {
@@ -18,14 +18,14 @@ class WelcomeScreen extends StatelessWidget {
           child: Column(
             children: [
               const Spacer(),
-              const CompanionMark(size: 190, mood: CompanionMood.pleased, showRays: true),
+              const Mascot(size: 200, mood: MascotMood.wave, showRays: true),
               const SizedBox(height: 8),
               StaggerIn(
                 step: const Duration(milliseconds: 160),
                 children: [
                   Text('Speak first.\nThink in English.', textAlign: TextAlign.center, style: context.text.displayMedium),
                   const SizedBox(height: 14),
-                  Text('Short spoken scenes, one goal each. Press Play and talk. We take care of the rest.',
+                  Text("I'm $mascotName. Short spoken scenes, one goal each. Press Play and talk. I'll take care of the rest.",
                       textAlign: TextAlign.center, style: context.text.bodyLarge!.copyWith(color: c.inkMuted)),
                   const SizedBox(height: 22),
                   Wrap(

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../theme/app_theme.dart';
 import '../../widgets/common.dart';
-import '../../widgets/companion.dart';
+import '../../widgets/mascot.dart';
 
 /// Results: stars, coins, theme bar fill animation, new expression, Continue.
 /// Score details are folded away.
@@ -35,7 +35,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
               const SizedBox(height: 14),
               const Center(child: StarRow(stars: 3, size: 64, delay: Duration(milliseconds: 300))),
               const SizedBox(height: 4),
-              const Center(child: CompanionMark(size: 150, mood: CompanionMood.pleased)),
+              const Center(child: Mascot(size: 160, mood: MascotMood.cheer)),
               const SizedBox(height: 4),
               Center(
                 child: Container(

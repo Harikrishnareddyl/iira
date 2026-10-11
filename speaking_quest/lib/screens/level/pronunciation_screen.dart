@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../theme/app_theme.dart';
 import '../../widgets/common.dart';
-import '../../widgets/companion.dart';
+import '../../widgets/mascot.dart';
 import '../../widgets/level.dart';
 import '../../widgets/voice.dart';
 
@@ -142,7 +142,7 @@ class _PronunciationScreenState extends State<PronunciationScreen> {
                         onTap: _next,
                         child: Row(
                           children: [
-                            const CompanionMark(size: 48, mood: CompanionMood.pleased, showRays: false),
+                            const Mascot(size: 48, mood: MascotMood.happy, showRays: false),
                             const SizedBox(width: 10),
                             Expanded(child: Text('That sounded natural.', style: context.text.titleMedium)),
                             Text(_line == _lines.length - 1 ? 'Finish' : 'Next', style: context.text.titleSmall!.copyWith(color: c.green)),

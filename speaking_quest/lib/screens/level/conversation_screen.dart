@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/avatar.dart';
 import '../../widgets/common.dart';
-import '../../widgets/companion.dart';
+import '../../widgets/mascot.dart';
 import '../../widgets/level.dart';
 import '../../widgets/voice.dart';
 
@@ -201,6 +201,16 @@ class _ConversationScreenState extends State<ConversationScreen> {
                           ? HintCard(text: t.hint)
                           : const SizedBox(width: double.infinity),
                     ),
+                    // Gentle nudge after leaning on Translate.
+                    AnimatedSize(
+                      duration: const Duration(milliseconds: 250),
+                      child: (_uses['Translate'] ?? 0) >= 2 && !_done && _caption == null
+                          ? const Padding(
+                              padding: EdgeInsets.only(top: 10),
+                              child: MascotTip(text: 'Try this one without Translate. You know more than you think.'),
+                            )
+                          : const SizedBox(width: double.infinity),
+                    ),
                   ],
                 ),
               ),
@@ -331,7 +341,7 @@ class _DoneBanner extends StatelessWidget {
       onTap: onTap,
       child: Row(
         children: [
-          const CompanionMark(size: 56, mood: CompanionMood.pleased, showRays: false),
+          const Mascot(size: 56, mood: MascotMood.happy, showRays: false),
           const SizedBox(width: 10),
           Expanded(
             child: Column(

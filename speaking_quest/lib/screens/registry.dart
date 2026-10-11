@@ -24,6 +24,7 @@ import 'level/retry_screen.dart';
 import 'level/sound_natural_screen.dart';
 import 'level/theme_complete_screen.dart';
 import 'level/think_in_english_screen.dart';
+import 'mascot_screen.dart';
 import 'onboarding/goals_screen.dart';
 import 'onboarding/hello_chat_screen.dart';
 import 'onboarding/placement_screen.dart';
@@ -49,6 +50,9 @@ class ScreenGroup {
 }
 
 final screenGroups = <ScreenGroup>[
+  ScreenGroup('Mascot', 'Echo, the guide and Free talk partner.', [
+    ScreenEntry('Meet Echo', 'Every mood and where it appears', Icons.emoji_emotions_rounded, (_) => const MascotScreen()),
+  ]),
   ScreenGroup('Curriculum skeleton', 'Every theme, its scenes across all level types, targets and variations.', [
     ScreenEntry('All themes & level types', 'Daily life, Work, Travel, Study · open any theme', Icons.account_tree_rounded, (_) => const CurriculumScreen()),
   ]),
@@ -84,7 +88,7 @@ final screenGroups = <ScreenGroup>[
     ScreenEntry('Free play hub', 'Free talk, Make a scene, Try again, Twists', Icons.sports_esports_rounded, (_) => const FreePlayScreen()),
     ScreenEntry('Free play (empty state)', 'Before any scene is completed', Icons.inbox_rounded, (_) => const FreePlayScreen(empty: true)),
     ScreenEntry('Make your own scene', 'Type or say a real situation', Icons.edit_rounded, (_) => const MakeSceneScreen()),
-    ScreenEntry('Free talk', 'Open chat with Maya, live timer', Icons.graphic_eq_rounded, (_) => const FreeTalkScreen()),
+    ScreenEntry('Free talk', 'Open chat with Echo, live timer', Icons.graphic_eq_rounded, (_) => const FreeTalkScreen()),
     ScreenEntry('Free talk recap', 'Went well, try next time, said naturally', Icons.summarize_rounded, (_) => const FreeTalkRecapScreen()),
     ScreenEntry('Out of free sessions', 'Use 30 coins for another session', Icons.hourglass_empty_rounded, (_) => const SessionLimitScreen()),
   ]),

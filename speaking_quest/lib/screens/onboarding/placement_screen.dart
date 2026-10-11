@@ -4,7 +4,7 @@ import '../../data/mock_data.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/avatar.dart';
 import '../../widgets/common.dart';
-import '../../widgets/companion.dart';
+import '../../widgets/mascot.dart';
 import '../../widgets/level.dart';
 import '../../widgets/voice.dart';
 
@@ -146,7 +146,7 @@ class _PlacementScreenState extends State<PlacementScreen> {
       key: const ValueKey('done'),
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const CompanionMark(size: 140, mood: CompanionMood.pleased),
+        const Mascot(size: 140, mood: MascotMood.happy),
         Text('That\'s everything', style: context.text.displaySmall),
         const SizedBox(height: 6),
         Text('Building your profile and first plan.', style: context.text.bodyLarge!.copyWith(color: c.inkMuted)),

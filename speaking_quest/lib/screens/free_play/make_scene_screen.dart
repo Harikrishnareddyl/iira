@@ -4,7 +4,7 @@ import '../../data/mock_data.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/avatar.dart';
 import '../../widgets/common.dart';
-import '../../widgets/companion.dart';
+import '../../widgets/mascot.dart';
 import '../../widgets/level.dart';
 
 enum _Stage { input, building, ready }
@@ -129,7 +129,7 @@ class _MakeSceneScreenState extends State<MakeSceneScreen> {
       key: const ValueKey('building'),
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const CompanionMark(size: 140, mood: CompanionMood.listening),
+        const Mascot(size: 140, mood: MascotMood.thinking),
         const SizedBox(height: 16),
         Text('Building your scene…', style: context.text.headlineSmall),
         const SizedBox(height: 18),

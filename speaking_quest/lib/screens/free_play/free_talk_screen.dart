@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../../theme/app_theme.dart';
-import '../../widgets/avatar.dart';
+import '../../widgets/mascot.dart';
 import '../../widgets/common.dart';
 import '../../widgets/level.dart';
 import '../../widgets/voice.dart';
@@ -15,7 +15,7 @@ const _turns = [
   ("Good question back! Honestly, I'd ask for more time. Weekends are precious.", 'Yes, you are right. I will ask my manager tomorrow.', false),
 ];
 
-/// Free talk: open conversation with Maya. No goal, no stars, no failure —
+/// Free talk: open conversation with Echo, the mascot. No goal, no stars, no failure —
 /// a live dot and a running timer replace the goal pill.
 class FreeTalkScreen extends StatefulWidget {
   const FreeTalkScreen({super.key});
@@ -81,7 +81,7 @@ class _FreeTalkScreenState extends State<FreeTalkScreen> {
               Row(
                 children: [
                   IconButton(onPressed: () => showPauseSheet(context), icon: Icon(Icons.pause_rounded, color: c.ink, size: 34)),
-                  Expanded(child: Text('Maya', textAlign: TextAlign.center, style: context.text.headlineMedium)),
+                  Expanded(child: Text(mascotName, textAlign: TextAlign.center, style: context.text.headlineMedium)),
                   const _LiveDot(),
                   const SizedBox(width: 6),
                   Text(_time, style: context.text.titleMedium!.copyWith(fontFeatures: const [FontFeature.tabularFigures()])),
@@ -93,7 +93,7 @@ class _FreeTalkScreenState extends State<FreeTalkScreen> {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    CharacterAvatar(spec: CharacterSpec.mayaCasual, size: 108, talking: _caption == null && !_listening),
+                    Mascot(size: 112, mood: _listening ? MascotMood.listening : (_caption != null ? (_tipSaved ? MascotMood.thinking : MascotMood.idle) : MascotMood.talking), showRays: false),
                     const SizedBox(width: 10),
                     Expanded(
                       child: AnimatedSwitcher(
@@ -155,7 +155,7 @@ class _FreeTalkScreenState extends State<FreeTalkScreen> {
                     onUse: (p) => setState(() {
                       _uses[p.label] = (_uses[p.label] ?? 0) + 1;
                       if (p.label == 'Hint') _hint = true;
-                      if (p.label == 'Slower') toast(context, 'Maya will speak a little slower.');
+                      if (p.label == 'Slower') toast(context, '$mascotName will speak a little slower.');
                     }),
                   ),
                 ),

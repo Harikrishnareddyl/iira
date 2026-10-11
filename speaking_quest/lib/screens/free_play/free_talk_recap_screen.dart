@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../theme/app_theme.dart';
 import '../../widgets/common.dart';
-import '../../widgets/companion.dart';
+import '../../widgets/mascot.dart';
 
 /// Free talk recap: duration and coins, two things that went well, two to try
 /// next time, one sentence said more naturally.
@@ -20,10 +20,10 @@ class FreeTalkRecapScreen extends StatelessWidget {
             StaggerIn(
               step: const Duration(milliseconds: 90),
               children: [
-                const Center(child: CompanionMark(size: 110, mood: CompanionMood.pleased)),
+                const Center(child: Mascot(size: 120, mood: MascotMood.cheer)),
                 Text('Good chat', textAlign: TextAlign.center, style: context.text.displaySmall),
                 const SizedBox(height: 4),
-                Text('With Maya · about your project', textAlign: TextAlign.center, style: context.text.bodyLarge!.copyWith(color: c.inkMuted)),
+                Text('With $mascotName · about your project', textAlign: TextAlign.center, style: context.text.bodyLarge!.copyWith(color: c.inkMuted)),
                 const SizedBox(height: 14),
                 Row(
                   children: [
@@ -42,7 +42,7 @@ class FreeTalkRecapScreen extends StatelessWidget {
                   bg: c.surfaceGreen,
                   items: const [
                     'You used "run late" naturally.',
-                    'You asked Maya a question back: "What would you do?"',
+                    'You asked $mascotName a question back: "What would you do?"',
                   ],
                 ),
                 const SizedBox(height: 12),

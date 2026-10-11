@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/avatar.dart';
 import '../../widgets/common.dart';
-import '../../widgets/companion.dart';
+import '../../widgets/mascot.dart';
 import '../../widgets/level.dart';
 import '../../widgets/voice.dart';
 
@@ -116,7 +116,7 @@ class _PractiseExpressionScreenState extends State<PractiseExpressionScreen> {
                         key: const ValueKey('done'),
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const CompanionMark(size: 110, mood: CompanionMood.pleased),
+                          const Mascot(size: 110, mood: MascotMood.happy),
                           Text('Used naturally', style: context.text.headlineMedium),
                           const SizedBox(height: 4),
                           Text("It's moving toward Mastered.", style: context.text.bodyLarge!.copyWith(color: c.inkMuted)),

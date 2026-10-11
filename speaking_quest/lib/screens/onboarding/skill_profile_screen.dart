@@ -4,7 +4,7 @@ import '../../data/mock_data.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/common.dart';
 import '../../widgets/level.dart';
-import '../../widgets/companion.dart';
+import '../../widgets/mascot.dart';
 
 /// End of onboarding: the skill profile (one score per skill) and the first
 /// plan (3–5 themes from goals and profile).
@@ -30,7 +30,7 @@ class SkillProfileScreen extends StatelessWidget {
                       const SizedBox(height: 16),
                       Row(
                         children: [
-                          const CompanionMark(size: 70, mood: CompanionMood.pleased, showRays: false),
+                          const Mascot(size: 70, mood: MascotMood.happy, showRays: false),
                           const SizedBox(width: 10),
                           Expanded(child: Text('Here\'s how you speak today', style: context.text.headlineMedium)),
                         ],

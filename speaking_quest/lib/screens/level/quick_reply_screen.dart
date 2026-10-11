@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../theme/app_theme.dart';
 import '../../widgets/common.dart';
-import '../../widgets/companion.dart';
+import '../../widgets/mascot.dart';
 import '../../widgets/level.dart';
 import '../../widgets/voice.dart';
 
@@ -152,7 +152,7 @@ class _QuickReplyScreenState extends State<QuickReplyScreen>
                             ),
                             const SizedBox(height: 14),
                             if (_results[_round] == _R.missed)
-                              Text("That's okay. Next one.", style: context.text.titleMedium!.copyWith(color: c.inkMuted))
+                              const MascotTip(text: "That's okay. Next one.", mood: MascotMood.idle)
                             else if (_answer != null)
                               ChatBubble(text: '', fromLearner: true, child: LiveCaption(text: _answer!, style: context.text.titleLarge!.copyWith(fontFamily: AppTheme.body, fontSize: 21)))
                             else if (_starter)
@@ -217,7 +217,7 @@ class _Summary extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        CompanionMark(size: 130, mood: won ? CompanionMood.pleased : CompanionMood.dim),
+        Mascot(size: 130, mood: won ? MascotMood.happy : MascotMood.sad),
         const SizedBox(height: 12),
         Text(won ? 'Quick and clear' : 'Close', style: context.text.displaySmall),
         const SizedBox(height: 6),

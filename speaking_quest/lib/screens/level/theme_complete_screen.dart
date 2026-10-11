@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../../theme/app_theme.dart';
 import '../../widgets/common.dart';
-import '../../widgets/companion.dart';
+import '../../widgets/mascot.dart';
 
 /// Theme complete: +50 coins, a calm confetti burst, then the next unfinished
 /// theme in the plan starts automatically.
@@ -89,7 +89,7 @@ class _ThemeCompleteScreenState extends State<ThemeCompleteScreen>
                     color: c.surfaceGreen,
                     child: Row(
                       children: [
-                        const CompanionMark(size: 52, mood: CompanionMood.pleased, showRays: false),
+                        const Mascot(size: 56, mood: MascotMood.cheer, showRays: false),
                         const SizedBox(width: 10),
                         Expanded(
                           child: Column(

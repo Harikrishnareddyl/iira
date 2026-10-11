@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../theme/app_theme.dart';
 import 'common.dart';
+import 'mascot.dart';
 import 'voice.dart';
 
 /// Shared frame for every level type: pause, title, a thin in-level progress
@@ -368,6 +369,7 @@ class _PauseSheetBodyState extends State<PauseSheetBody> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            const Center(child: Mascot(size: 84, mood: MascotMood.idle)),
             Text('Paused', style: context.text.headlineMedium, textAlign: TextAlign.center),
             const SizedBox(height: 4),
             Text('Take a breath. Your progress in this scene is kept.',

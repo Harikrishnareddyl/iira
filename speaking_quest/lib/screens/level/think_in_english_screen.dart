@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/avatar.dart';
 import '../../widgets/common.dart';
-import '../../widgets/companion.dart';
+import '../../widgets/mascot.dart';
 import '../../widgets/level.dart';
 import '../../widgets/voice.dart';
 
@@ -161,7 +161,7 @@ class _ThinkInEnglishScreenState extends State<ThinkInEnglishScreen> {
                               onTap: () => demoNav(context, 'Results'),
                               child: Row(
                                 children: [
-                                  const CompanionMark(size: 48, mood: CompanionMood.pleased, showRays: false),
+                                  const Mascot(size: 48, mood: MascotMood.happy, showRays: false),
                                   const SizedBox(width: 10),
                                   Expanded(child: Text('Three connected sentences. That flowed well.', style: context.text.titleMedium)),
                                   Icon(Icons.chevron_right_rounded, color: c.green),
@@ -169,7 +169,7 @@ class _ThinkInEnglishScreenState extends State<ThinkInEnglishScreen> {
                               ),
                             )
                           : _nudge
-                              ? HintCard(key: const ValueKey('nudge'), text: 'Keep going in English. Simple is fine.', icon: Icons.chat_bubble_outline_rounded)
+                              ? const MascotTip(key: ValueKey('nudge'), text: 'Keep going in English. Simple is fine.')
                               : _chip != null
                                   ? HintCard(key: ValueKey(_chip), text: _chips[_chip]!)
                                   : _starter

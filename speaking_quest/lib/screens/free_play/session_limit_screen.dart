@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../data/mock_data.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/common.dart';
-import '../../widgets/companion.dart';
+import '../../widgets/mascot.dart';
 
 /// Out of free sessions: Free talk and Make your own share 3 free sessions a
 /// day; another one costs 30 coins. Power-ups and the plan are never paid.
@@ -32,7 +32,7 @@ class _SessionLimitScreenState extends State<SessionLimitScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const CompanionMark(size: 130, mood: CompanionMood.rest),
+                    const Mascot(size: 130, mood: MascotMood.idle),
                     const SizedBox(height: 10),
                     Text(_bought ? 'One more chat' : 'Free chats used for today',
                         textAlign: TextAlign.center, style: context.text.displaySmall),

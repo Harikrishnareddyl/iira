@@ -3,13 +3,13 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../../theme/app_theme.dart';
-import '../../widgets/avatar.dart';
+import '../../widgets/mascot.dart';
 import '../../widgets/common.dart';
 import '../../widgets/level.dart';
 import '../../widgets/voice.dart';
 
 const _qa = [
-  ("Hi, I'm Maya. What's your name?", "I'm Alex. Nice to meet you."),
+  ("Hi, I'm $mascotName. What's your name?", "I'm Alex. Nice to meet you."),
   ('Nice to meet you, Alex. What do you do?', "I'm a product designer. I work with a team in London."),
   ('Cool! Why do you want to speak more English?', 'In meetings I understand everything, but I freeze when I have to speak.'),
 ];
@@ -79,7 +79,7 @@ class _HelloChatScreenState extends State<HelloChatScreen> {
               Text('Hello chat', style: context.text.displaySmall),
               Text('Just talk. There are no wrong answers.', style: context.text.bodyMedium!.copyWith(color: c.inkMuted)),
               const SizedBox(height: 14),
-              const CharacterAvatar(spec: CharacterSpec.mayaCasual, size: 100),
+              Mascot(size: 110, mood: _log.last.$1 ? MascotMood.listening : MascotMood.talking, showRays: false),
               const SizedBox(height: 12),
               Expanded(
                 child: ListView.separated(

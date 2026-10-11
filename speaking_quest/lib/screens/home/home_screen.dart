@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../data/mock_data.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/common.dart';
-import '../../widgets/companion.dart';
+import '../../widgets/mascot.dart';
 
 /// Home: one next step. Theme bar (opens My plan), next scene card, Play,
 /// Free play, coins, streak, Expressions and Profile.
@@ -58,9 +58,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           style: context.text.displayLarge!.copyWith(fontSize: 52)),
                       const SizedBox(height: 4),
                       Center(
-                        child: CompanionMark(
-                          size: 150,
-                          mood: CompanionMood.rest,
+                        child: Mascot(
+                          size: 160,
+                          mood: MascotMood.wave,
                           showRays: true,
                           rayColor: c.green,
                         ),

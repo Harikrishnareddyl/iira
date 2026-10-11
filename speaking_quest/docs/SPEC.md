@@ -3,6 +3,8 @@
 Updated Oct 11, 2026 · "Speaking Quest" is a working name.
 
 > Reference copy saved with the prototype. Visual references live in `docs/references/`.
+>
+> **Change (Oct 11, 2026):** the abstract voice mark is replaced by a mascot, **Echo** (working name). Echo is the guide everywhere and the Free talk partner (previously Maya). Scene role-play characters stay separate. See *Mascot* under Screens and UX notes.
 
 ## Overview
 
@@ -167,7 +169,7 @@ Free play lets learners practise anything they've already learned in the current
 
 ### Free talk
 
-Free talk is an open, unscripted conversation of about 3–5 minutes with one consistent AI partner (Maya in the prototype). It builds the stamina scenes can't: keeping a conversation going with no task, changing topics and recovering when stuck. It is the top of the speaking ladder: short goal scenes in the plan, then longer unscripted theme finales, then Free talk.
+Free talk is an open, unscripted conversation of about 3–5 minutes with one consistent AI partner: Echo, the mascot. It builds the stamina scenes can't: keeping a conversation going with no task, changing topics and recovering when stuck. It is the top of the speaking ladder: short goal scenes in the plan, then longer unscripted theme finales, then Free talk.
 
 - **No goal, no stars, no failure.** A live dot and a running timer replace the goal pill.
 - **The partner remembers.** It opens by picking up on the last chat ("Last time you said…") and knows the learner's job and plan.
@@ -285,7 +287,9 @@ Notes per screen:
 
 **Visual direction.** The app is for adults: professionals, students and job seekers. It keeps the calm, one-action-per-screen simplicity but avoids anything childish. A forest-and-stone palette with one deep green accent; amber only for earned things (stars, coins, streak). A clean modern sans-serif for text with a slightly characterful display face for headings. Flat surfaces with thin borders instead of chunky 3D buttons. Characters are adults in real settings, drawn in a simple flat style. Copy is grounded ("Well done", "That sounded natural") rather than cheerful exclamations. Light and dark themes.
 
-**Companion.** An abstract voice mark (a speech bubble with sound bars) replaces a mascot. It breathes gently at rest, its bars move when it's pleased, and it dims when the learner misses a goal. It gives feedback and appears when the learner struggles. Encouraging, never mocking.
+**Mascot (Echo).** Echo is a speech-bubble character with a face, small arms and sound-bar hair, drawn in the same flat style and palette, friendly but not childish. Echo is the guide across the app (welcome, home, onboarding host, feedback, tips and nudges, results, failure, pause) and the Free talk partner. Role-play scenes keep their own adult characters (barista, manager, officer) so situations feel real. Moods: idle (breathes, blinks), wave, talking, listening (hand to ear), thinking, happy, cheer (results and theme complete) and missed (dimmed, never mocking).
+
+*Previously:* **Companion.** An abstract voice mark (a speech bubble with sound bars) replaced a mascot. It breathes gently at rest, its bars move when it's pleased, and it dims when the learner misses a goal. It gives feedback and appears when the learner struggles. Encouraging, never mocking.
 
 **Failure screen.** When the goal isn't reached: the companion says it was close, shows the two or three expressions that would have helped (tap to hear), and offers Retry. No lost lives or coins.
 

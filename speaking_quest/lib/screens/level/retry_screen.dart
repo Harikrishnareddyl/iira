@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../theme/app_theme.dart';
 import '../../widgets/common.dart';
-import '../../widgets/companion.dart';
+import '../../widgets/mascot.dart';
 import '../../widgets/voice.dart';
 
 /// Soft failure: the companion says it was close, shows the expressions that
@@ -40,7 +40,7 @@ class _RetryScreenState extends State<RetryScreen> {
                   children: [
                     Text('One more try', textAlign: TextAlign.center, style: context.text.displayMedium),
                     const SizedBox(height: 6),
-                    const Center(child: CompanionMark(size: 150, mood: CompanionMood.dim)),
+                    const Center(child: Mascot(size: 150, mood: MascotMood.sad)),
                     Text('That was close. These would have helped:',
                         textAlign: TextAlign.center, style: context.text.bodyLarge!.copyWith(color: c.inkMuted)),
                     const SizedBox(height: 12),

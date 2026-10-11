@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../theme/app_theme.dart';
 import '../../widgets/common.dart';
-import '../../widgets/companion.dart';
+import '../../widgets/mascot.dart';
 import '../../widgets/level.dart';
 import '../../widgets/voice.dart';
 
@@ -132,9 +132,9 @@ class _SoundNaturalScreenState extends State<SoundNaturalScreen> {
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            CompanionMark(
+                            Mascot(
                               size: 64,
-                              mood: att.$2 == _Verdict.wrong ? CompanionMood.rest : CompanionMood.pleased,
+                              mood: att.$2 == _Verdict.wrong ? MascotMood.idle : MascotMood.happy,
                               showRays: false,
                             ),
                             const SizedBox(width: 8),

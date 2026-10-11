@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../theme/app_theme.dart';
 import '../widgets/common.dart';
-import '../widgets/companion.dart';
+import '../widgets/mascot.dart';
 import 'registry.dart';
 
 /// Prototype index: every screen, grouped by flow, each opens standalone.
@@ -22,7 +22,7 @@ class CatalogScreen extends StatelessWidget {
                 padding: const EdgeInsets.fromLTRB(20, 16, 12, 4),
                 child: Row(
                   children: [
-                    const CompanionMark(size: 64, mood: CompanionMood.rest),
+                    const Mascot(size: 64, mood: MascotMood.wave),
                     const SizedBox(width: 10),
                     Expanded(
                       child: Column(

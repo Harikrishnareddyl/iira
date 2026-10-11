@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/avatar.dart';
 import '../../widgets/common.dart';
-import '../../widgets/companion.dart';
+import '../../widgets/mascot.dart';
 import '../../widgets/level.dart';
 import '../../widgets/voice.dart';
 
@@ -211,7 +211,7 @@ class _ListeningScreenState extends State<ListeningScreen>
                       const SizedBox(height: 10),
                       Row(
                         children: [
-                          const CompanionMark(size: 44, mood: CompanionMood.pleased, showRays: false),
+                          const Mascot(size: 44, mood: MascotMood.happy, showRays: false),
                           const SizedBox(width: 8),
                           Expanded(child: Text(clip.feedback, style: context.text.bodyLarge)),
                           TextButton(onPressed: _next, child: Text(_clip == _clips.length - 1 ? 'Finish' : 'Next clip', style: context.text.titleSmall!.copyWith(color: c.green))),

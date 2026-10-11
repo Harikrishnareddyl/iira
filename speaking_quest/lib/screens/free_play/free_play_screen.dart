@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../../data/mock_data.dart';
 import '../../theme/app_theme.dart';
-import '../../widgets/avatar.dart';
+import '../../widgets/mascot.dart';
 import '../../widgets/common.dart';
 import '../../widgets/voice.dart';
 
@@ -49,7 +49,7 @@ class FreePlayScreen extends StatelessWidget {
                               Icon(Icons.auto_awesome_rounded, color: c.inkMuted),
                               const SizedBox(width: 12),
                               Expanded(
-                                child: Text('Replays and new twists appear here as you finish scenes in your plan. Free talk with Maya opens after 2 scenes.',
+                                child: Text('Replays and new twists appear here as you finish scenes in your plan. Free talk with $mascotName opens after 2 scenes.',
                                     style: context.text.bodyMedium!.copyWith(color: c.inkMuted)),
                               ),
                             ],
@@ -187,12 +187,10 @@ class _FreeTalkCard extends StatelessWidget {
             children: [
               Opacity(
                 opacity: locked ? 0.5 : 1,
-                child: CharacterAvatar(
-                  spec: CharacterSpec.mayaCasual,
-                  size: 190,
-                  width: 440,
-                  circle: false,
-                  background: c.surfaceGreen,
+                child: SizedBox(
+                  height: 190,
+                  width: double.infinity,
+                  child: Center(child: Mascot(size: 180, mood: locked ? MascotMood.idle : MascotMood.wave, showRays: false)),
                 ),
               ),
               Positioned(
@@ -217,7 +215,7 @@ class _FreeTalkCard extends StatelessWidget {
             decoration: BoxDecoration(color: c.surface, borderRadius: BorderRadius.circular(20)),
             child: Column(
               children: [
-                Text('Talk with Maya', style: context.text.headlineMedium),
+                Text('Talk with $mascotName', style: context.text.headlineMedium),
                 const SizedBox(height: 2),
                 Text(
                   locked

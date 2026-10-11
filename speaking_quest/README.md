@@ -22,16 +22,17 @@ The home page is a **catalog of every screen**, grouped by flow. Tap one to open
 
 | Group | Screens |
 | --- | --- |
+| Mascot | Meet Echo (every mood and where it's used) |
 | Curriculum skeleton | All themes & level types → theme (scenes, targets, type mix) → scene template |
 | Onboarding | Welcome, Hello chat, Goals & daily time, Placement run (adaptive), Skill profile & first plan |
 | Home & plan | Home, My plan (switch / reorder / remove), Explore themes (fit labels, prerequisite tips), Theme path |
 | Levels | Level intro (Plan / Finale / Free play / Practice tags), Conversation, Listening, Think in English, Quick reply, Pronunciation, Sound natural, Theme finale |
 | After a level | Results, One more try (soft failure), Theme complete |
-| Free play | Hub, Empty state, Make your own scene, Free talk, Free talk recap, Out of free sessions |
+| Free play | Hub, Empty state, Make your own scene, Free talk (with Echo), Free talk recap, Out of free sessions |
 | Expressions | List (Practising / Mastered), Detail, Practise it |
 | Profile | Profile, Streak & coins (freeze, repair, extra sessions), Settings |
 
-Shared pieces live in `lib/widgets/`: the companion voice mark (breathes at rest, bars dance when pleased, dims on a miss), the hold-to-speak mic with rings and waveforms, power-up tiles (unlimited, counted), goal pill, plain theme bar (no numbers), stars, coins and code-drawn characters.
+Shared pieces live in `lib/widgets/`: **Echo, the mascot** (`mascot.dart`; idle, wave, talking, listening, thinking, happy, cheer and missed moods, plus `MascotTip` for nudges; see *Meet Echo* in the catalog), the hold-to-speak mic with rings and waveforms, power-up tiles (unlimited, counted), goal pill, plain theme bar (no numbers), stars, coins and code-drawn characters.
 
 ## Curriculum skeleton
 
@@ -51,7 +52,7 @@ lib/
   theme/app_theme.dart      forest-and-stone palette, light/dark, type scale
   data/mock_data.dart       learner, plan, expressions (mock)
   data/curriculum/          curriculum skeleton
-  widgets/                  companion, voice (mic, waveform, captions), avatar, level, common
+  widgets/                  mascot (Echo), voice (mic, waveform, captions), avatar, level, common
   screens/                  one folder per flow + registry.dart (catalog list)
 test/                       curriculum integrity + render smoke test for every screen
 ```
